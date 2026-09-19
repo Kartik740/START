@@ -1,0 +1,61 @@
+{
+  "name": "START — Anti-Procrastination Operating System",
+  "short_name": "START",
+  "description": "A calm, intelligent personal anti-procrastination operating system that translates intention into immediate physical action.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Today Focus Action",
+      "short_name": "Today",
+      "description": "View current single action and focus state",
+      "url": "/today",
+      "icons": [{ "src": "/favicon.svg", "sizes": "32x32" }]
+    },
+    {
+      "name": "Daily Work Windows",
+      "short_name": "Planner",
+      "description": "Plan next slot and work windows",
+      "url": "/planner",
+      "icons": [{ "src": "/favicon.svg", "sizes": "32x32" }]
+    },
+    {
+      "name": "Night Review",
+      "short_name": "Review",
+      "description": "Reflect on today and pre-commit tomorrow",
+      "url": "/review",
+      "icons": [{ "src": "/favicon.svg", "sizes": "32x32" }]
+    }
+  ]
+}

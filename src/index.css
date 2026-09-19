@@ -1,0 +1,292 @@
+@import "tailwindcss";
+
+/* ============================================================
+   BeProductive — Design System Tokens
+   ============================================================ */
+
+@theme {
+  /* Primary accent — emerald/teal spectrum (warm, growth-oriented) */
+  --color-primary-50: oklch(0.97 0.02 160);
+  --color-primary-100: oklch(0.93 0.04 160);
+  --color-primary-200: oklch(0.87 0.08 160);
+  --color-primary-300: oklch(0.78 0.12 160);
+  --color-primary-400: oklch(0.68 0.15 160);
+  --color-primary-500: oklch(0.58 0.17 160);
+  --color-primary-600: oklch(0.50 0.17 160);
+  --color-primary-700: oklch(0.44 0.15 160);
+
+  /* Warm accent — amber/orange */
+  --color-warm-400: oklch(0.80 0.15 75);
+  --color-warm-500: oklch(0.75 0.17 65);
+
+  /* Success */
+  --color-success-400: oklch(0.76 0.16 155);
+  --color-success-500: oklch(0.68 0.17 155);
+
+  /* Danger */
+  --color-danger-400: oklch(0.70 0.18 25);
+  --color-danger-500: oklch(0.62 0.21 25);
+
+  /* Custom animation definitions */
+  --animate-fade-in-up: fade-in-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-slide-in-right: slide-in-right 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-scale-in: scale-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-shimmer: shimmer 2s linear infinite;
+}
+
+@layer base {
+  :root {
+    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-display: 'Outfit', var(--font-sans);
+
+    /* Surface system — dark mode (warm stone base) */
+    --surface-0: #0c0a09;   /* stone-950 — page background */
+    --surface-1: #1c1917;   /* stone-900 — card background */
+    --surface-2: #292524;   /* stone-800 — elevated surface */
+    --surface-3: #44403c;   /* stone-700 — borders, dividers */
+
+    /* Text hierarchy */
+    --text-primary: #fafaf9;    /* stone-50 */
+    --text-secondary: #a8a29e;  /* stone-400 */
+    --text-tertiary: #78716c;   /* stone-500 */
+    --text-muted: #57534e;      /* stone-600 */
+
+    /* Border */
+    --border-default: rgba(68, 64, 60, 0.5);
+    --border-subtle: rgba(68, 64, 60, 0.3);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+    --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.12);
+
+    color-scheme: dark;
+  }
+
+  html.light {
+    --surface-0: #fafaf9;
+    --surface-1: #ffffff;
+    --surface-2: #f5f5f4;
+    --surface-3: #e7e5e4;
+
+    --text-primary: #0c0a09;
+    --text-secondary: #57534e;
+    --text-tertiary: #78716c;
+    --text-muted: #a8a29e;
+
+    --border-default: rgba(231, 229, 228, 0.8);
+    --border-subtle: rgba(231, 229, 228, 0.5);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+    --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.06);
+
+    color-scheme: light;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    letter-spacing: -0.011em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--surface-0);
+    color: var(--text-primary);
+  }
+
+  /* Minimum readable text */
+  p, span, label, li {
+    font-size: max(0.8125rem, 13px);
+  }
+}
+
+/* ============================================================
+   Scrollbar
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) transparent;
+}
+
+/* ============================================================
+   Focus & Selection
+   ============================================================ */
+
+:focus-visible {
+  outline: 2px solid oklch(0.58 0.17 160);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: oklch(0.58 0.17 160 / 0.25);
+  color: var(--text-primary);
+}
+
+/* ============================================================
+   Keyframe Animations
+   ============================================================ */
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes progress-fill {
+  from { width: 0%; }
+}
+
+/* ============================================================
+   Utility Classes
+   ============================================================ */
+
+@utility animate-fade-in-up {
+  animation: fade-in-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-slide-in-right {
+  animation: slide-in-right 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-scale-in {
+  animation: scale-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+@utility animate-progress-fill {
+  animation: progress-fill 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility surface-0 {
+  background-color: var(--surface-0);
+}
+
+@utility surface-1 {
+  background-color: var(--surface-1);
+}
+
+@utility surface-2 {
+  background-color: var(--surface-2);
+}
+
+@utility text-primary {
+  color: var(--text-primary);
+}
+
+@utility text-secondary {
+  color: var(--text-secondary);
+}
+
+@utility text-tertiary {
+  color: var(--text-tertiary);
+}
+
+@utility border-default {
+  border-color: var(--border-default);
+}
+
+@utility border-subtle {
+  border-color: var(--border-subtle);
+}
+
+@utility shadow-surface {
+  box-shadow: var(--shadow-sm);
+}
+
+@utility shadow-elevated {
+  box-shadow: var(--shadow-md);
+}
+
+@utility shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+/* ============================================================
+   Global interactive transitions
+   ============================================================ */
+
+button, a, input, textarea, select {
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Card hover lift */
+.card-hover {
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Button press effect */
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="maskableGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+  </defs>
+  <!-- Maskable full bleed background -->
+  <rect width="512" height="512" fill="#09090b"/>
+  <rect x="76" y="76" width="360" height="360" rx="90" fill="url(#maskableGrad)"/>
+  <path d="M256 160 L324 256 L276 256 L292 352 L212 256 L256 256 Z" fill="#ffffff" stroke-linejoin="round"/>
+</svg>
