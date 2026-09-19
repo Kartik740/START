@@ -26,24 +26,24 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const sizeClasses = {
-      sm: 'h-9 px-3.5 text-xs gap-1.5 rounded-xl font-medium',
-      md: 'h-10 px-5 text-sm gap-2 rounded-xl font-medium',
-      lg: 'h-12 px-6 text-[15px] gap-2.5 rounded-xl font-semibold',
+      sm: 'h-8 px-3 text-xs gap-1.5 rounded-lg font-medium tracking-tight',
+      md: 'h-9 px-4 text-xs sm:text-[13px] gap-2 rounded-lg font-medium tracking-tight',
+      lg: 'h-11 px-6 text-sm gap-2.5 rounded-xl font-semibold tracking-tight',
     };
 
     const variantClasses = {
       primary:
-        'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold shadow-md shadow-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50 disabled:shadow-none',
+        'bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_1px_3px_rgba(0,0,0,0.3),0_4px_14px_rgba(16,185,129,0.25)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_2px_6px_rgba(0,0,0,0.35),0_6px_20px_rgba(16,185,129,0.32)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] border border-emerald-400/40 disabled:opacity-40 disabled:shadow-none disabled:translate-y-0',
       secondary:
-        'bg-stone-800/80 hover:bg-stone-700/80 text-stone-200 border border-stone-700/60 hover:border-stone-600 shadow-sm disabled:opacity-50',
+        'bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white border border-white/[0.08] hover:border-white/[0.14] shadow-[0_1px_2px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-40 disabled:translate-y-0',
       outline:
-        'bg-transparent hover:bg-stone-800/40 text-stone-300 hover:text-stone-100 border border-stone-700/60 hover:border-stone-600 disabled:opacity-50',
+        'bg-transparent hover:bg-white/[0.04] text-slate-300 hover:text-white border border-white/[0.08] hover:border-white/[0.16] disabled:opacity-40',
       ghost:
-        'bg-transparent hover:bg-stone-800/40 text-stone-400 hover:text-stone-200 disabled:opacity-50',
+        'bg-transparent hover:bg-white/[0.05] text-slate-400 hover:text-slate-100 disabled:opacity-40',
       danger:
-        'bg-red-600/90 hover:bg-red-500 text-white font-medium shadow-sm disabled:opacity-50',
+        'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/25 shadow-sm hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-40',
       recovery:
-        'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-semibold shadow-md shadow-amber-500/20 disabled:opacity-50',
+        'bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 shadow-sm hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-40',
     };
 
     return (
@@ -51,8 +51,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || isLoading}
         className={cn(
-          'inline-flex items-center justify-center transition-all duration-150 cursor-pointer select-none',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-0)]',
+          'inline-flex items-center justify-center transition-all duration-200 ease-out cursor-pointer select-none',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-0)]',
           'disabled:cursor-not-allowed',
           sizeClasses[size],
           variantClasses[variant],

@@ -8,19 +8,19 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', children, ...props }, ref) => {
     const variantClasses = {
-      default: 'surface-1 border-stone-800/50 shadow-surface',
-      elevated: 'surface-2 border-stone-700/50 shadow-elevated',
-      active: 'surface-1 border-emerald-500/30 shadow-md shadow-emerald-500/5 ring-1 ring-emerald-500/10',
-      subtle: 'bg-stone-900/40 border-stone-800/30',
-      recovery: 'bg-amber-950/15 border-amber-500/25 shadow-sm shadow-amber-500/5',
-      glass: 'bg-stone-900/40 backdrop-blur-xl border-stone-700/30 shadow-lg',
+      default: 'bg-[#12151c] border border-white/[0.065] shadow-[0_1px_2px_rgba(0,0,0,0.35)]',
+      elevated: 'bg-[#181d26] border border-white/[0.08] shadow-[0_4px_18px_-2px_rgba(0,0,0,0.5)]',
+      active: 'bg-[#12151c] border border-emerald-500/25 shadow-[0_0_24px_rgba(16,185,129,0.08)]',
+      subtle: 'bg-white/[0.02] border border-white/[0.04]',
+      recovery: 'bg-amber-950/15 border border-amber-500/25 shadow-[0_0_20px_rgba(245,158,11,0.06)]',
+      glass: 'glass-panel',
     };
 
     return (
       <div
         ref={ref}
         className={cn(
-          'rounded-2xl border text-stone-100 transition-all duration-200',
+          'rounded-xl text-slate-100 transition-all duration-200 relative overflow-hidden',
           variantClasses[variant],
           className
         )}
@@ -46,7 +46,7 @@ export const CardTitle = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <h3
     ref={ref}
-    className={cn("font-['Outfit'] text-base font-semibold text-stone-100 leading-snug tracking-tight", className)}
+    className={cn("font-['Plus_Jakarta_Sans',sans-serif] text-base font-semibold text-slate-100 leading-snug tracking-tight", className)}
     {...props}
   >
     {children}

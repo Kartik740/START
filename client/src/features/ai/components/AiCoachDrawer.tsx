@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog } from '../../../components/ui/Dialog.tsx';
 import { Button } from '../../../components/ui/Button.tsx';
 import { Input } from '../../../components/ui/Input.tsx';
@@ -11,6 +12,11 @@ import {
   IfThenPlanResult,
 } from '../aiWorkflows.ts';
 import { isGeminiConfigured } from '../geminiService.ts';
+import { dataService } from '../../../services/dataService.ts';
+import { sessionStorageManager } from '../../sessions/sessionStorage.ts';
+import { getTodayString, formatTime, addMinutes } from '../../../utils/dates.ts';
+import { sound } from '../../../utils/sound.ts';
+import { WorkSlot } from '../../../types/models.ts';
 import {
   Sparkles,
   Target,
@@ -34,6 +40,7 @@ export const AiCoachDrawer: React.FC<AiCoachDrawerProps> = ({
   onClose,
   onOpenOverwhelm,
 }) => {
+  const navigate = useNavigate();
   const [toolMode, setToolMode] = useState<AiToolMode>('first_action');
   const [taskInput, setTaskInput] = useState('');
   const [secondaryInput, setSecondaryInput] = useState('');
@@ -49,6 +56,48 @@ export const AiCoachDrawer: React.FC<AiCoachDrawerProps> = ({
     navigator.clipboard.writeText(text);
     setCopiedText(text);
     setTimeout(() => setCopiedText(null), 2000);
+  };
+
+  const handleStartActionNow = async (actionText: string) => {
+    const now = new Date();
+    const newSlot: WorkSlot = {
+      id: crypto.randomUUID(),
+      date: getTodayString(),
+      startTime: formatTime(now),
+      endTime: formatTime(addMinutes(now, 15)),
+      taskTitle: taskInput.trim() || 'AI Guided Action Sprint',
+      desiredOutput: '1 measurable deliverable completed',
+      firstPhysicalAction: actionText,
+      estimatedDurationMinutes: 15,
+      status: 'in_progress',
+      isTopPriority: 1,
+    };
+    await dataService.saveSlot(newSlot);
+    sound.playStartChime(true);
+    sessionStorageManager.startSession(newSlot);
+    onClose();
+    navigate('/session');
+  };
+
+  const handleStartMilestoneNow = async (milestone: DecomposedMilestone) => {
+    const now = new Date();
+    const newSlot: WorkSlot = {
+      id: crypto.randomUUID(),
+      date: getTodayString(),
+      startTime: formatTime(now),
+      endTime: formatTime(addMinutes(now, 25)),
+      taskTitle: milestone.title,
+      desiredOutput: milestone.intendedOutput,
+      firstPhysicalAction: milestone.nextAction,
+      estimatedDurationMinutes: 25,
+      status: 'in_progress',
+      isTopPriority: 1,
+    };
+    await dataService.saveSlot(newSlot);
+    sound.playStartChime(true);
+    sessionStorageManager.startSession(newSlot);
+    onClose();
+    navigate('/session');
   };
 
   const handleRunTool = async () => {
@@ -207,35 +256,45 @@ export const AiCoachDrawer: React.FC<AiCoachDrawerProps> = ({
         {/* OUTPUT 1: FIRST ACTION OPTIONS */}
         {toolMode === 'first_action' && actionsResult.length > 0 && (
           <div className="space-y-3">
-            <span className="text-xs font-medium text-stone-400 font-bold block">
+            <span className="text-xs font-medium text-slate-300 font-semibold block">
               3 Concrete Physical Starting Actions (&lt;15s bodily movements):
             </span>
             <div className="space-y-2">
               {actionsResult.map((act, idx) => (
                 <div
                   key={idx}
-                  className="p-3 bg-stone-950 rounded-lg border border-stone-800/40 flex items-center justify-between gap-3 text-xs text-stone-200"
+                  className="p-3 bg-[#111318] rounded-xl border border-white/[0.06] flex items-center justify-between gap-3 text-xs text-slate-200"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-emerald-400 font-mono font-bold">#{idx + 1}</span>
-                    <span className="font-sans">{act}</span>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="text-emerald-400 font-mono font-bold shrink-0">#{idx + 1}</span>
+                    <span className="font-sans truncate">{act}</span>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleCopy(act)}
-                    className="text-xs font-mono text-stone-400 h-7 px-2"
-                  >
-                    {copiedText === act ? (
-                      <span className="text-emerald-400 flex items-center gap-1">
-                        <Check className="w-3 h-3" /> Copied
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1">
-                        <Copy className="w-3 h-3" /> Copy
-                      </span>
-                    )}
-                  </Button>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleCopy(act)}
+                      className="text-xs font-mono text-slate-400 h-7 px-2"
+                    >
+                      {copiedText === act ? (
+                        <span className="text-emerald-400 flex items-center gap-1">
+                          <Check className="w-3 h-3" /> Copied
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1">
+                          <Copy className="w-3 h-3" /> Copy
+                        </span>
+                      )}
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => handleStartActionNow(act)}
+                      className="text-xs font-mono h-7 px-2.5 font-semibold"
+                    >
+                      <Play className="w-3 h-3 fill-current mr-1" /> Start Now
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -245,25 +304,35 @@ export const AiCoachDrawer: React.FC<AiCoachDrawerProps> = ({
         {/* OUTPUT 2: DECOMPOSED MILESTONES */}
         {toolMode === 'decompose' && milestonesResult.length > 0 && (
           <div className="space-y-3">
-            <span className="text-xs font-medium text-stone-400 font-bold block">
+            <span className="text-xs font-medium text-slate-300 font-semibold block">
               Sequential Milestone Breakdown:
             </span>
             <div className="space-y-2">
               {milestonesResult.map((m, idx) => (
                 <div
                   key={idx}
-                  className="p-3 bg-stone-950 rounded-lg border border-stone-800/40 space-y-1 text-xs"
+                  className="p-3 bg-[#111318] rounded-xl border border-white/[0.06] space-y-2 text-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-stone-100">{m.title}</span>
+                    <span className="font-semibold text-white">{m.title}</span>
                     <Badge variant="neutral" size="sm">{m.estimatedHours}h</Badge>
                   </div>
                   <p className="text-xs text-emerald-400 font-mono">
                     Artifact: {m.intendedOutput}
                   </p>
-                  <p className="text-xs text-stone-400">
-                    1st Action: {m.nextAction}
-                  </p>
+                  <div className="flex items-center justify-between pt-1">
+                    <p className="text-xs text-slate-400 truncate max-w-sm">
+                      1st Action: {m.nextAction}
+                    </p>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => handleStartMilestoneNow(m)}
+                      className="text-xs font-mono h-6 px-2 font-semibold shrink-0"
+                    >
+                      <Play className="w-2.5 h-2.5 fill-current mr-1" /> Start Milestone
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>

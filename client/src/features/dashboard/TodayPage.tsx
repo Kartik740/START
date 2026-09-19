@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { PageContainer } from '../../components/layout/PageContainer.tsx';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card.tsx';
-import { EmptyState } from '../../components/ui/EmptyState.tsx';
 import { Button } from '../../components/ui/Button.tsx';
 import { Badge } from '../../components/ui/Badge.tsx';
 import { useSlots } from '../../hooks/useSlots.ts';
@@ -112,14 +111,6 @@ export const TodayPage: React.FC = () => {
   const [isNightReviewWizardOpen, setIsNightReviewWizardOpen] = useState(false);
   const [slotToClarify, setSlotToClarify] = useState<WorkSlot | null>(null);
 
-  const handleOpenAiCoach = () => {
-    window.dispatchEvent(new CustomEvent('open-ai-coach'));
-  };
-
-  const handleOpenOverwhelm = () => {
-    window.dispatchEvent(new CustomEvent('open-overwhelm-rescue'));
-  };
-
   // Data state
   const [todaySessions, setTodaySessions] = useState<WorkSession[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -187,9 +178,6 @@ export const TodayPage: React.FC = () => {
     (acc, s) => acc + (s.actualDurationMinutes || 0),
     0
   );
-  const concreteOutputsCount = todaySessions.filter(
-    (s) => s.isOutputComplete === 'complete' && s.producedOutput
-  ).length || completedSlots.length;
 
   // Start Slot Handler (transitions directly to focused workspace)
   const handleStartSlot = async (slot: WorkSlot) => {
@@ -266,25 +254,7 @@ export const TodayPage: React.FC = () => {
       subtitle="All attention directed to a single concrete action."
       ruleHint={todaysRule ? `${todaysRule.code}: ${todaysRule.name}` : "Rule 01: Start Before Motivation"}
       actions={
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            className="border-amber-500/25 text-amber-300 hover:bg-amber-500/10 cursor-pointer"
-            leftIcon={<LifeBuoy className="w-3.5 h-3.5 text-amber-400" />}
-            onClick={handleOpenOverwhelm}
-          >
-            Overwhelmed?
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="border-emerald-500/25 text-emerald-300 hover:bg-emerald-500/10 cursor-pointer"
-            leftIcon={<Sparkles className="w-3.5 h-3.5 text-emerald-400" />}
-            onClick={handleOpenAiCoach}
-          >
-            AI Coach
-          </Button>
+        <div className="flex items-center gap-2">
           <Button
             variant="primary"
             size="sm"
@@ -304,19 +274,17 @@ export const TodayPage: React.FC = () => {
       <div className="space-y-6 text-left">
 
         {/* ─── Compact Status Bar ─── */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl surface-1 border border-stone-800/40">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
-              <Clock className="w-5 h-5" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 px-4 rounded-xl bg-[#111318] border border-white/[0.07] shadow-[0_1px_2px_rgba(0,0,0,0.4)]">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              <Clock className="w-4 h-4" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-stone-100">
-                  {formattedLiveTime}
-                </span>
-                <span className="text-stone-600">·</span>
-                <span className="text-sm text-stone-400">{formattedDate}</span>
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-white font-mono tracking-tight">
+                {formattedLiveTime}
+              </span>
+              <span className="text-slate-600">·</span>
+              <span className="text-xs text-slate-400">{formattedDate}</span>
             </div>
           </div>
 
@@ -327,16 +295,16 @@ export const TodayPage: React.FC = () => {
                 (top1Slot.status === 'in_progress' || activeSession?.slot.id === top1Slot.id) ? 'action' :
                 isSlotMissed(top1Slot, currentTime) ? 'warning' : 'action'
               }>
-                {top1Slot.status === 'completed' ? 'Top 1 done' :
-                 (top1Slot.status === 'in_progress' || activeSession?.slot.id === top1Slot.id) ? 'Top 1 active' :
-                 isSlotMissed(top1Slot, currentTime) ? 'Top 1 needs recovery' : 'Top 1 ready'}
+                {top1Slot.status === 'completed' ? 'Top 1 Done' :
+                 (top1Slot.status === 'in_progress' || activeSession?.slot.id === top1Slot.id) ? 'Top 1 Active' :
+                 isSlotMissed(top1Slot, currentTime) ? 'Top 1 Needs Recovery' : 'Top 1 Ready'}
               </Badge>
             )}
             {activeSession && (
-              <Badge variant="action" className="animate-pulse-soft">Active session</Badge>
+              <Badge variant="action" className="animate-pulse-soft">Active Session</Badge>
             )}
             {behindSlot && !activeSession && (
-              <Badge variant="warning">Behind schedule</Badge>
+              <Badge variant="warning">Ready to Re-anchor</Badge>
             )}
           </div>
         </div>
@@ -359,74 +327,71 @@ export const TodayPage: React.FC = () => {
 
         {/* STATE 1: ACTIVE FOCUS SESSION RUNNING */}
         {activeSession ? (
-          <Card variant="active" className="border-emerald-500/30 bg-gradient-to-b from-emerald-950/20 to-transparent overflow-hidden">
-            <CardHeader className="pb-4 border-b border-stone-800/40">
+          <Card variant="active" className="hairline-card rounded-xl border border-emerald-500/35 bg-[#111318] overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.6),0_0_24px_rgba(16,185,129,0.14)]">
+            <CardHeader className="p-5 sm:p-6 pb-4 border-b border-white/[0.06]">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs font-medium text-emerald-400">Active focus session</span>
+                <div className="flex items-center gap-2 text-xs font-mono font-semibold text-emerald-400 uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
+                  <span>Active Focus Session Engaged</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-stone-400">
-                  <span>Target: {activeSession.targetDurationMinutes}m</span>
+                <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+                  <span className="bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
+                    Target: {activeSession.targetDurationMinutes}m
+                  </span>
                   {activeSession.isPaused && (
                     <Badge variant="warning">Paused</Badge>
                   )}
                 </div>
               </div>
-              <CardTitle className="text-2xl sm:text-3xl text-stone-50 mt-3 font-bold">
+              <CardTitle className="font-['Inter_Tight',sans-serif] text-2xl sm:text-3xl text-white mt-2 font-bold tracking-tight">
                 {activeSession.slot.taskTitle}
               </CardTitle>
             </CardHeader>
 
-            <CardContent className="p-5 sm:p-6 space-y-5">
+            <CardContent className="p-5 sm:p-6 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-4 rounded-xl surface-2 border border-stone-800/30 space-y-1.5">
-                  <span className="text-xs font-medium text-emerald-400 block">
-                    Concrete target output
+                <div className="p-3.5 rounded-lg bg-black/40 border border-emerald-500/20 space-y-1">
+                  <span className="text-[10px] font-mono text-emerald-400 font-semibold uppercase tracking-wider block">
+                    Target Output
                   </span>
-                  <p className="text-sm text-stone-200">
+                  <p className="text-sm text-slate-200">
                     {activeSession.slot.desiredOutput}
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl surface-2 border border-stone-800/30 space-y-1.5">
-                  <span className="text-xs font-medium text-amber-400 block">
-                    First physical action
+                <div className="p-3.5 rounded-lg bg-black/40 border border-white/[0.08] space-y-1">
+                  <span className="text-[10px] font-mono text-slate-400 font-semibold uppercase tracking-wider block">
+                    Physical Starter Motion
                   </span>
-                  <p className="text-sm text-stone-200">
+                  <p className="text-sm text-slate-200">
                     &ldquo;{activeSession.slot.firstPhysicalAction}&rdquo;
                   </p>
                 </div>
               </div>
 
               {/* Countdown Snapshot */}
-              <div className="p-3.5 rounded-xl surface-2 border border-stone-800/30 flex items-center justify-between text-sm">
-                <span className="text-stone-400">
-                  Elapsed:{' '}
-                  <strong className="text-stone-200">
-                    {Math.floor(calculateElapsedSeconds(activeSession) / 60)}m
-                  </strong>
+              <div className="p-3 px-4 rounded-lg bg-white/[0.02] border border-white/[0.06] flex items-center justify-between text-xs font-mono">
+                <span className="text-slate-400">
+                  Elapsed: <strong className="text-white ml-1">{Math.floor(calculateElapsedSeconds(activeSession) / 60)}m</strong>
                 </span>
-                <span className="text-stone-400">
-                  Remaining:{' '}
-                  <strong className="text-emerald-400">
-                    {Math.floor(calculateRemainingSeconds(activeSession) / 60)}m
-                  </strong>
+                <span className="text-slate-400">
+                  Remaining: <strong className="text-emerald-400 ml-1">{Math.floor(calculateRemainingSeconds(activeSession) / 60)}m</strong>
                 </span>
-                <span className="text-amber-300 text-xs">
-                  {activeSession.distractions.length} urge(s) resisted
+                <span className="text-amber-300">
+                  {activeSession.distractions.length} urge(s) captured
                 </span>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 pt-2">
+              <div className="flex flex-wrap items-center gap-2.5 pt-2">
                 <Button
                   variant="primary"
                   size="lg"
                   onClick={() => navigate('/session')}
-                  leftIcon={<Play className="w-4 h-4" />}
-                  className="shadow-xl"
+                  leftIcon={<Play className="w-4 h-4 fill-stone-950" />}
+                  className="px-6"
                 >
-                  Resume Workspace
+                  <span>Resume Workspace</span>
+                  <span className="kbd-chip text-[10px] ml-2 text-stone-950 bg-emerald-400/80 border-emerald-400/40">↵</span>
                 </Button>
                 <Button
                   variant="secondary"
@@ -447,7 +412,7 @@ export const TodayPage: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-amber-300">
                       <AlertCircle className="w-4 h-4 text-amber-400" />
-                      <span className="text-sm font-semibold">You are behind the plan.</span>
+                      <span className="text-sm font-semibold">Ready to re-anchor your day.</span>
                     </div>
                     <p className="text-base font-semibold text-stone-100">
                       Scheduled start for &ldquo;{behindSlot.taskTitle}&rdquo; ({behindSlot.startTime}) has passed.
@@ -513,10 +478,10 @@ export const TodayPage: React.FC = () => {
                     <LifeBuoy className="w-4 h-4 text-amber-400" />
                     <span className="text-sm font-semibold">Recover in 10 minutes</span>
                   </div>
-                  <h3 className="font-['Outfit'] text-lg font-bold text-stone-100">
+                  <h3 className="font-['Plus_Jakarta_Sans',sans-serif] text-lg font-bold text-white">
                     Missed Slot: &ldquo;{missedSlot.taskTitle}&rdquo;
                   </h3>
-                  <p className="text-sm text-stone-400">
+                  <p className="text-sm text-slate-400">
                     Don't postpone until tomorrow. Lower activation energy to 10 minutes and break inertia right now.
                   </p>
                 </div>
@@ -542,10 +507,10 @@ export const TodayPage: React.FC = () => {
               <CheckCircle2 className="w-7 h-7" />
             </div>
             <div className="space-y-2">
-              <h2 className="font-['Outfit'] text-2xl font-bold text-stone-100">
+              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl font-bold text-white tracking-tight">
                 All priorities completed
               </h2>
-              <p className="text-sm text-stone-400 max-w-md mx-auto">
+              <p className="text-sm text-slate-400 max-w-md mx-auto">
                 Today's essential work windows have been executed. Protect your cognitive energy this evening and lock in tomorrow's plan during Night Review.
               </p>
             </div>
@@ -563,125 +528,134 @@ export const TodayPage: React.FC = () => {
             </div>
           </Card>
         ) : hasNoTasks ? (
-          /* STATE 5: NEW DAY / NO TASKS SCHEDULED */
-          <Card variant="active" className="border-emerald-500/15">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between text-sm text-emerald-400">
-                <span>Today initialization</span>
-                <span className="text-stone-500">Rule 02 · Clarity</span>
-              </div>
-              <CardTitle className="text-xl text-stone-100 mt-1">
-                No work slots scheduled yet today
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <EmptyState
-                icon={<Compass className="w-6 h-6 text-emerald-400" />}
-                title="Your next concrete action will appear here."
-                description="START rejects ambiguous to-do lists. Plan your Top 1 anchor deliverable or launch an immediate 10-minute micro-start to build momentum."
-                action={
-                  <div className="flex flex-wrap items-center justify-center gap-3">
-                    <Button
-                      variant="primary"
-                      size="md"
-                      leftIcon={<Compass className="w-4 h-4" />}
-                      onClick={() => setIsPlanModalOpen(true)}
-                    >
-                      Plan Top 1 Slot
-                    </Button>
-                    <Button
-                      variant="recovery"
-                      size="md"
-                      onClick={() => {
-                        const emergencySlot: WorkSlot = {
-                          id: crypto.randomUUID(),
-                          date: today,
-                          startTime: '10:00',
-                          endTime: '10:10',
-                          taskTitle: '10-Minute Momentum Rescue',
-                          desiredOutput: '1 micro-step completed',
-                          firstPhysicalAction: 'Open project and write 1 paragraph',
-                          estimatedDurationMinutes: 10,
-                          status: 'in_progress',
-                        };
-                        setRecoveryTargetSlot(emergencySlot);
-                        setIsRecoveryModalOpen(true);
-                      }}
-                    >
-                      10-min Micro-Start
-                    </Button>
-                  </div>
-                }
-                secondaryNote="Rule 01: Motivation follows physical action. Do not wait to feel ready."
-              />
-            </CardContent>
-          </Card>
+          /* STATE 5: NEW DAY / NO TASKS SCHEDULED — Unified Focus Launchpad */
+          <div className="rounded-xl border border-white/[0.07] bg-[#12151c] p-8 sm:p-12 text-center space-y-6 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5)]">
+            <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-emerald-400 mx-auto flex items-center justify-center shadow-inner">
+              <Compass className="w-6 h-6" />
+            </div>
+
+            <div className="space-y-2 max-w-lg mx-auto">
+              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-xl sm:text-2xl font-bold text-white tracking-tight">
+                Ready for your first focus window
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                START operates on physical momentum. Schedule your Top 1 anchor deliverable or launch an immediate 10-minute micro-start to break inertia.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+              <Button
+                variant="primary"
+                size="md"
+                leftIcon={<Compass className="w-4 h-4" />}
+                onClick={() => setIsPlanModalOpen(true)}
+              >
+                Plan Top 1 Slot
+              </Button>
+              <Button
+                variant="recovery"
+                size="md"
+                onClick={() => {
+                  const emergencySlot: WorkSlot = {
+                    id: crypto.randomUUID(),
+                    date: today,
+                    startTime: '10:00',
+                    endTime: '10:10',
+                    taskTitle: '10-Minute Momentum Rescue',
+                    desiredOutput: '1 micro-step completed',
+                    firstPhysicalAction: 'Open project and write 1 paragraph',
+                    estimatedDurationMinutes: 10,
+                    status: 'in_progress',
+                  };
+                  setRecoveryTargetSlot(emergencySlot);
+                  setIsRecoveryModalOpen(true);
+                }}
+              >
+                10-min Micro-Start
+              </Button>
+            </div>
+
+            <p className="text-[11px] font-mono text-slate-500 pt-2">
+              Rule 01: Motivation follows physical action. Do not wait to feel ready.
+            </p>
+          </div>
         ) : (
           /* STATE 6: NEXT ACTION READY — The hero card */
           nextReadySlot && (
-            <Card variant="active" className="border-emerald-500/25 overflow-hidden">
-              <CardHeader className="pb-4 border-b border-stone-800/30">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-emerald-400 font-medium">
-                    <Target className="w-4 h-4" />
-                    <span>Next action</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-stone-400">
-                      {nextReadySlot.startTime}
+            <Card variant="active" className="rounded-xl border border-white/[0.08] bg-[#12151c] overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5),0_0_24px_rgba(16,185,129,0.06)]">
+              <div className="p-6 sm:p-7 space-y-6">
+                {/* Header info */}
+                <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-white/[0.06]">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span className="text-xs font-medium text-slate-300">
+                      {nextReadySlot.isTopPriority === 1 ? "Today's Top Priority" : "Scheduled Focus Slot"}
                     </span>
-                    <Badge variant="action">{nextReadySlot.estimatedDurationMinutes} min</Badge>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+                    <span className="bg-white/[0.03] px-2 py-0.5 rounded border border-white/[0.06]">
+                      {nextReadySlot.startTime} – {nextReadySlot.endTime}
+                    </span>
+                    <span>·</span>
+                    <span>{nextReadySlot.estimatedDurationMinutes} min</span>
                   </div>
                 </div>
-                <CardTitle className="text-2xl sm:text-3xl text-stone-50 mt-3 font-bold">
-                  {nextReadySlot.taskTitle}
-                </CardTitle>
-              </CardHeader>
 
-              <CardContent className="p-5 sm:p-6 space-y-5">
-                {/* First Physical Action — Hero element */}
-                <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-500/8 to-teal-500/5 border border-emerald-500/20 space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-emerald-400 font-medium">
-                    <Zap className="w-4 h-4" />
-                    <span>Do this in 15 seconds</span>
+                {/* Primary Task Title */}
+                <div>
+                  <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl sm:text-3xl text-white font-semibold tracking-tight leading-tight">
+                    {nextReadySlot.taskTitle}
+                  </h2>
+                </div>
+
+                {/* 2-Column Clarity Details */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
+                  <div className="p-4 rounded-lg bg-white/[0.02] border border-white/[0.05] space-y-1">
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-400">
+                      <Zap className="w-3.5 h-3.5" />
+                      <span>First physical step</span>
+                    </div>
+                    <p className="text-sm text-slate-200 leading-relaxed">
+                      &ldquo;{nextReadySlot.firstPhysicalAction}&rdquo;
+                    </p>
                   </div>
-                  <p className="text-lg sm:text-xl font-medium text-stone-100 leading-relaxed">
-                    &ldquo;{nextReadySlot.firstPhysicalAction}&rdquo;
-                  </p>
+
+                  <div className="p-4 rounded-lg bg-white/[0.02] border border-white/[0.05] space-y-1">
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400">
+                      <Target className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Intended deliverable</span>
+                    </div>
+                    <p className="text-sm text-slate-200 leading-relaxed">
+                      {nextReadySlot.desiredOutput}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Desired Output */}
-                <div className="space-y-1.5">
-                  <span className="text-xs text-stone-500 font-medium block">
-                    What will exist when this slot closes
-                  </span>
-                  <p className="text-sm text-stone-300">
-                    {nextReadySlot.desiredOutput}
-                  </p>
+                {/* Phone Check Notice */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/[0.015] border border-white/[0.05] text-xs text-slate-400">
+                  <div className="flex items-center gap-2">
+                    <PhoneOff className="w-3.5 h-3.5 text-amber-400/80" />
+                    <span>Environmental rule: Place phone physically out of reach before starting.</span>
+                  </div>
                 </div>
 
-                {/* Phone Rule - subtle */}
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-stone-800/30 border border-stone-800/30 text-sm text-amber-300/80">
-                  <PhoneOff className="w-4 h-4 shrink-0" />
-                  <span>Put your phone out of reach before clicking Start.</span>
-                </div>
-
-                {/* Action Buttons */}
+                {/* Action Controls */}
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   <Button
                     variant="primary"
                     size="lg"
-                    leftIcon={<Play className="w-5 h-5" />}
+                    leftIcon={<Play className="w-4 h-4 fill-slate-950" />}
                     onClick={() => handleStartSlot(nextReadySlot)}
-                    className="shadow-xl shadow-emerald-500/15 cursor-pointer px-8"
+                    className="px-8"
                   >
-                    START
+                    <span>Start Session</span>
+                    <span className="kbd-chip text-[10px] ml-2 text-slate-950 bg-emerald-400/80 border-emerald-400/40 font-mono">Space</span>
                   </Button>
 
                   <Button
                     variant="secondary"
                     size="md"
-                    leftIcon={<Compass className="w-4 h-4" />}
+                    leftIcon={<Compass className="w-3.5 h-3.5" />}
                     onClick={() => setIsPlanModalOpen(true)}
                   >
                     Plan Next Slot
@@ -695,113 +669,45 @@ export const TodayPage: React.FC = () => {
                       setIsRecoveryModalOpen(true);
                     }}
                   >
-                    10-min Recovery
+                    10-min Micro-Start
                   </Button>
                 </div>
-              </CardContent>
+              </div>
             </Card>
           )
         )}
 
-        {/* ─── Executive Assistance & Overwhelm Rescue Cards ─── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Card 1: AI Coach */}
-          <div className="p-5 rounded-2xl surface-1 border border-emerald-500/20 bg-gradient-to-br from-emerald-950/20 via-stone-900/40 to-transparent flex flex-col justify-between gap-4">
-            <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/25 text-emerald-300 flex items-center justify-center shrink-0">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold text-stone-100">AI Executive Coach</h3>
-                  <Badge variant="action">Reasoning</Badge>
-                </div>
-                <p className="text-xs text-stone-400 leading-relaxed">
-                  Break cognitive friction: generate 15-second physical bodily actions, decompose complex assignments into milestones, or formulate Peter Gollwitzer if-then obstacle plans.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between pt-3 border-t border-stone-800/40">
-              <span className="text-xs text-stone-500 font-mono">Zero chat · Pure friction reduction</span>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/15 cursor-pointer"
-                leftIcon={<Sparkles className="w-3.5 h-3.5" />}
-                onClick={handleOpenAiCoach}
-              >
-                Open Coach
-              </Button>
-            </div>
+        {/* ─── Today Velocity Metric Strip ─── */}
+        <div className="p-4 rounded-xl bg-[#12151c] border border-white/[0.065] flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
+            <Activity className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Today&apos;s Velocity</span>
           </div>
-
-          {/* Card 2: Overwhelm Rescue */}
-          <div className="p-5 rounded-2xl surface-1 border border-amber-500/20 bg-gradient-to-br from-amber-950/20 via-stone-900/40 to-transparent flex flex-col justify-between gap-4">
-            <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/25 text-amber-300 flex items-center justify-center shrink-0">
-                <LifeBuoy className="w-5 h-5" />
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold text-stone-100">Overwhelm Rescue</h3>
-                  <Badge variant="warning">Emergency</Badge>
-                </div>
-                <p className="text-xs text-stone-400 leading-relaxed">
-                  Feeling overwhelmed by too much work? Instantly collapse your day down into 3 essential triage questions and launch an immediate 10-minute micro-start.
-                </p>
-              </div>
+          <div className="flex flex-wrap items-center gap-6 text-xs font-mono">
+            <div>
+              <span className="text-slate-500 mr-1.5">Executed:</span>
+              <span className="text-emerald-400 font-semibold">{completedSlots.length} of {todaySlots.length} slots</span>
             </div>
-            <div className="flex items-center justify-between pt-3 border-t border-stone-800/40">
-              <span className="text-xs text-stone-500 font-mono">Stop paralysis · 10m micro-start</span>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="border-amber-500/30 text-amber-300 hover:bg-amber-500/15 cursor-pointer"
-                leftIcon={<LifeBuoy className="w-3.5 h-3.5" />}
-                onClick={handleOpenOverwhelm}
-              >
-                I'm Overwhelmed
-              </Button>
+            <div>
+              <span className="text-slate-500 mr-1.5">Focus Time:</span>
+              <span className="text-emerald-300 font-semibold">{totalFocusMinutes}m</span>
             </div>
-          </div>
-        </div>
-
-        {/* ─── Today Summary ─── */}
-        <div className="p-5 rounded-2xl surface-1 border border-stone-800/40 space-y-3">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-stone-400 font-medium flex items-center gap-2">
-              <Activity className="w-4 h-4 text-emerald-400" />
-              Today's summary
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-            {[
-              { label: 'Planned', value: todaySlots.length, color: 'text-stone-200' },
-              { label: 'Completed', value: completedSlots.length, color: 'text-emerald-400' },
-              { label: 'Remaining', value: Math.max(0, todaySlots.length - completedSlots.length), color: 'text-amber-300' },
-              { label: 'Outputs', value: concreteOutputsCount, color: 'text-emerald-400' },
-              { label: 'Focus time', value: `${totalFocusMinutes}m`, color: 'text-teal-300' },
-            ].map((stat) => (
-              <div key={stat.label} className="p-3 rounded-xl surface-2 border border-stone-800/30">
-                <span className="text-xs text-stone-500 block mb-1">{stat.label}</span>
-                <span className={`font-semibold text-base font-mono ${stat.color}`}>
-                  {stat.value}
-                </span>
-              </div>
-            ))}
+            <div>
+              <span className="text-slate-500 mr-1.5">Urges Resisted:</span>
+              <span className="text-amber-300 font-semibold">{distractions.length}</span>
+            </div>
           </div>
         </div>
 
         {/* ─── Assignment Pressure ─── */}
         {urgentAssignments.length > 0 && (
-          <div className="p-5 rounded-2xl surface-1 border border-stone-800/40 space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-stone-400 font-medium flex items-center gap-2">
+          <div className="p-5 rounded-xl bg-[#12151c] border border-white/[0.065] space-y-3">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-400 font-medium flex items-center gap-2">
                 <CalendarCheck className="w-4 h-4 text-amber-400" />
                 Active deadlines
               </span>
-              <Link to="/assignments" className="text-emerald-400 hover:text-emerald-300 text-sm">
+              <Link to="/assignments" className="text-emerald-400 hover:text-emerald-300 text-xs font-mono">
                 View all →
               </Link>
             </div>
@@ -815,15 +721,15 @@ export const TodayPage: React.FC = () => {
                 return (
                   <div
                     key={assignment.id}
-                    className="p-3.5 rounded-xl surface-2 border border-stone-800/30 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                    className="p-3.5 rounded-lg bg-white/[0.02] border border-white/[0.05] text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2"
                   >
                     <div className="space-y-1">
-                      <div className="font-medium text-stone-200">
+                      <div className="font-medium text-slate-200">
                         {assignment.title}
-                        <span className="text-stone-500 font-normal ml-2">
+                        <span className="text-slate-500 font-normal ml-2">
                           — {buffer.label}
                         </span>
-                        <span className="text-stone-500 font-normal ml-2">
+                        <span className="text-slate-500 font-normal ml-2">
                           — {remainingMilestones} milestone(s) left
                         </span>
                       </div>
@@ -833,7 +739,7 @@ export const TodayPage: React.FC = () => {
                     </div>
 
                     <Link to={`/assignments`}>
-                      <Button variant="ghost" size="sm" className="text-sm text-stone-400 hover:text-stone-200">
+                      <Button variant="ghost" size="sm" className="text-xs text-slate-400 hover:text-white">
                         Details
                       </Button>
                     </Link>
@@ -845,18 +751,14 @@ export const TodayPage: React.FC = () => {
         )}
 
         {/* ─── Night Review Status ─── */}
-        <div className="p-5 rounded-2xl surface-1 border border-stone-800/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-5 rounded-xl bg-[#12151c] border border-white/[0.065] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
-              todayReview
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/15'
-                : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/15'
-            }`}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center border bg-emerald-500/10 text-emerald-400 border-emerald-500/15">
               <MoonStar className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-semibold text-sm text-stone-200 block">Night Review</span>
-              <span className="text-sm text-stone-400">
+              <span className="font-semibold text-sm text-slate-200 block">Night Review</span>
+              <span className="text-xs sm:text-sm text-slate-400">
                 {todayReview
                   ? `Completed · Tomorrow starts: "${todayReview.tomorrowStartsWith}"`
                   : 'Pending for tonight · Reflect on today and plan tomorrow'}
@@ -867,7 +769,7 @@ export const TodayPage: React.FC = () => {
           <div className="flex items-center gap-2 shrink-0">
             {todayReview ? (
               <Link to="/review">
-                <Button variant="outline" size="sm">
+                <Button variant="secondary" size="sm">
                   View Blueprint
                 </Button>
               </Link>

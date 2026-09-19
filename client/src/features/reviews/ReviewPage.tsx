@@ -91,56 +91,56 @@ export const ReviewPage: React.FC = () => {
     >
       <div className="space-y-6 text-left">
         {/* TOP FACTUAL SUMMARY STRIP (No single score) */}
-        <div className="p-4 rounded-xl surface-1 border border-stone-800/40 shadow-xl space-y-3">
+        <div className="p-4 rounded-xl bg-[#12151c] border border-white/[0.065] shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-teal-400" />
-              <span className="text-xs font-medium text-stone-300 font-bold">
-                TODAY'S FACTUAL TALLY
+              <Activity className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-semibold text-slate-200">
+                Today&apos;s Velocity & Telemetry
               </span>
             </div>
-            <span className="text-xs font-mono text-stone-500">Date: {today}</span>
+            <span className="text-xs font-mono text-slate-500">{today}</span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5 text-xs">
-            <div className="p-3.5 rounded-xl surface-0 border border-stone-800/40">
-              <span className="text-xs font-mono uppercase text-stone-500 block">Planned</span>
-              <span className="font-mono font-bold text-stone-200 text-base">
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="text-[11px] font-mono text-slate-500 block">Planned</span>
+              <span className="font-mono font-bold text-white text-base">
                 {factualSummary.plannedSessions}
               </span>
             </div>
-            <div className="p-3.5 rounded-xl surface-0 border border-stone-800/40">
-              <span className="text-xs font-mono uppercase text-stone-500 block">Started</span>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="text-[11px] font-mono text-slate-500 block">Started</span>
               <span className="font-mono font-bold text-emerald-400 text-base">
                 {factualSummary.startedSessions}
               </span>
             </div>
-            <div className="p-3.5 rounded-xl surface-0 border border-stone-800/40">
-              <span className="text-xs font-mono uppercase text-stone-500 block">Completed</span>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="text-[11px] font-mono text-slate-500 block">Completed</span>
               <span className="font-mono font-bold text-emerald-400 text-base">
                 {factualSummary.completedSessions}
               </span>
             </div>
-            <div className="p-3.5 rounded-xl surface-0 border border-stone-800/40">
-              <span className="text-xs font-mono uppercase text-stone-500 block">Focus Time</span>
-              <span className="font-mono font-bold text-teal-300 text-base">
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="text-[11px] font-mono text-slate-500 block">Focus Time</span>
+              <span className="font-mono font-bold text-emerald-300 text-base">
                 {factualSummary.focusTimeMinutes}m
               </span>
             </div>
-            <div className="p-3.5 rounded-xl surface-0 border border-stone-800/40">
-              <span className="text-xs font-mono uppercase text-stone-500 block">Delayed Starts</span>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="text-[11px] font-mono text-slate-500 block">Delayed Starts</span>
               <span className="font-mono font-bold text-amber-400 text-base">
                 {factualSummary.delayedStarts}
               </span>
             </div>
-            <div className="p-3.5 rounded-xl surface-0 border border-stone-800/40">
-              <span className="text-xs font-mono uppercase text-stone-500 block">Distractions</span>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="text-[11px] font-mono text-slate-500 block">Distractions</span>
               <span className="font-mono font-bold text-amber-300 text-base">
                 {factualSummary.distractionEvents}
               </span>
             </div>
-            <div className="p-3.5 rounded-xl surface-0 border border-stone-800/40">
-              <span className="text-xs font-mono uppercase text-stone-500 block">Tasks Done</span>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="text-[11px] font-mono text-slate-500 block">Tasks Done</span>
               <span className="font-mono font-bold text-emerald-300 text-base">
                 {factualSummary.tasksCompleted}
               </span>
@@ -308,79 +308,68 @@ export const ReviewPage: React.FC = () => {
             </Card>
           </div>
         ) : (
-          <Card variant="default">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm font-semibold text-stone-200">
-                  <MoonStar className="w-4 h-4 text-emerald-400" />
-                  <span>Today&apos;s Review Protocol</span>
-                </div>
-                <span className="text-xs font-mono text-stone-500">Phase 5</span>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <EmptyState
-                icon={<MoonStar className="w-6 h-6 text-teal-400" />}
-                title="Night Review is ready to begin."
-                description="The purpose of the evening review is not journaling. It turns today's actual behavioral tallies into tomorrow's Top 3 priorities, concrete outputs, and the single 15-second action you will start with tomorrow morning."
-                action={
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    leftIcon={<Sparkles className="w-4 h-4" />}
-                    onClick={() => setIsWizardOpen(true)}
-                    className="bg-teal-600 hover:bg-teal-500 text-stone-100 font-bold px-6 shadow-xl shadow-teal-950/40"
-                  >
-                    Begin Guided Night Review
-                  </Button>
-                }
-                secondaryNote="Rule 10: Tomorrow is planned at night, not negotiated in the morning."
-              />
-            </CardContent>
-          </Card>
+          <div className="p-6 sm:p-10 rounded-xl bg-[#12151c] border border-white/[0.065]">
+            <EmptyState
+              icon={<MoonStar className="w-6 h-6 text-emerald-400" />}
+              title="Night Review is ready to begin."
+              description="The purpose of the evening review is turning today's behavioral tallies into tomorrow's Top 3 priorities, concrete outputs, and the single 15-second starter action for tomorrow morning."
+              action={
+                <Button
+                  variant="primary"
+                  size="lg"
+                  leftIcon={<Sparkles className="w-4 h-4" />}
+                  onClick={() => setIsWizardOpen(true)}
+                  className="px-8"
+                >
+                  Begin Guided Night Review
+                </Button>
+              }
+              secondaryNote="Rule 10: Tomorrow is planned at night, not negotiated in the morning."
+            />
+          </div>
         )}
 
         {/* 8-STEP PROTOCOL OVERVIEW */}
-        <Card variant="subtle" className="p-5">
-          <div className="flex items-center gap-2 text-xs font-mono font-semibold text-stone-300 mb-3">
+        <div className="p-5 rounded-xl bg-[#12151c] border border-white/[0.065] space-y-4">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-200">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>THE 8-STEP EVENING REVIEW ARCHITECTURE</span>
+            <span>Evening Review Architecture</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs text-stone-400">
-            <div className="p-2.5 rounded-xl surface-1/60 border border-stone-800/40">
-              <span className="font-mono text-teal-400 font-semibold block mb-1">01. Actual Output</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs text-slate-400">
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="font-mono text-emerald-400 font-semibold block mb-1 text-[11px]">01. Actual Output</span>
               Tangible artifacts created today.
             </div>
-            <div className="p-2.5 rounded-xl surface-1/60 border border-stone-800/40">
-              <span className="font-mono text-teal-400 font-semibold block mb-1">02. Procrastination</span>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="font-mono text-emerald-400 font-semibold block mb-1 text-[11px]">02. Procrastination</span>
               Friction triggers and delay causes.
             </div>
-            <div className="p-2.5 rounded-xl surface-1/60 border border-stone-800/40">
-              <span className="font-mono text-teal-400 font-semibold block mb-1">03. What Helped</span>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="font-mono text-emerald-400 font-semibold block mb-1 text-[11px]">03. What Helped</span>
               Starting catalysts that worked.
             </div>
-            <div className="p-2.5 rounded-xl surface-1/60 border border-stone-800/40">
-              <span className="font-mono text-teal-400 font-semibold block mb-1">04. Reflection</span>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="font-mono text-emerald-400 font-semibold block mb-1 text-[11px]">04. Reflection</span>
               Empirical data-based synthesis.
             </div>
-            <div className="p-2.5 rounded-xl surface-1/60 border border-stone-800/40">
-              <span className="font-mono text-teal-400 font-semibold block mb-1">05. Top 3 Priorities</span>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="font-mono text-emerald-400 font-semibold block mb-1 text-[11px]">05. Top 3 Priorities</span>
               Anchor, Secondary, and Buffer tasks.
             </div>
-            <div className="p-2.5 rounded-xl surface-1/60 border border-stone-800/40">
-              <span className="font-mono text-teal-400 font-semibold block mb-1">06. Action Conversion</span>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="font-mono text-emerald-400 font-semibold block mb-1 text-[11px]">06. Action Conversion</span>
               Outputs, first actions, and If-Thens.
             </div>
-            <div className="p-2.5 rounded-xl surface-1/60 border border-stone-800/40">
-              <span className="font-mono text-teal-400 font-semibold block mb-1">07. One Experiment</span>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="font-mono text-emerald-400 font-semibold block mb-1 text-[11px]">07. One Experiment</span>
               Single behavioral alteration.
             </div>
-            <div className="p-2.5 rounded-xl surface-1/60 border border-teal-500/30 bg-teal-950/20 text-indigo-200">
-              <span className="font-mono text-teal-300 font-semibold block mb-1">08. Tomorrow Starts</span>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <span className="font-mono text-emerald-400 font-semibold block mb-1 text-[11px]">08. Tomorrow Starts</span>
               Locked starting action & timeline.
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* REVIEW HISTORY */}
         {allReviews.length > 0 && (

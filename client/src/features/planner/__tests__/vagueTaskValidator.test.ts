@@ -77,6 +77,24 @@ describe('Vague Task & Action Validator (START Behavioral Invariants)', () => {
       }
     });
 
+    it('rejects disguised multi-word vague actions that lack physical targets', () => {
+      const disguisedVague = [
+        'work on assignment 2',
+        'research for history paper',
+        'study for biology quiz',
+        'look into database indexing',
+        'review lecture material',
+        'read through chapter notes',
+        'prepare for presentation',
+        'think about system design',
+      ];
+      for (const act of disguisedVague) {
+        const res = validateFirstPhysicalAction(act);
+        expect(res.isValid).toBe(false);
+        expect(res.reason).toBeDefined();
+      }
+    });
+
     it('accepts unambiguous 15-second physical motions', () => {
       const validStarters = [
         'Open Tutorial 3 and solve Question 1',

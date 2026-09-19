@@ -78,10 +78,10 @@ export const Dialog: React.FC<DialogProps> = ({
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1.5">
               {title && (
-                <h2 className="font-['Outfit'] text-xl font-semibold tracking-tight text-stone-50">{title}</h2>
+                <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-xl font-semibold tracking-tight text-white">{title}</h2>
               )}
               {description && (
-                <p className="text-sm text-stone-400 leading-relaxed">{description}</p>
+                <p className="text-sm text-slate-400 leading-relaxed">{description}</p>
               )}
             </div>
             {showCloseButton && (

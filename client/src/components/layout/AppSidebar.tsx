@@ -56,12 +56,6 @@ export const NAV_ITEMS: NavItem[] = [
     description: 'Delay triggers & starting trends',
   },
   {
-    to: '/rules',
-    label: 'Rules OS',
-    icon: BookOpen,
-    description: '10 Anti-procrastination laws',
-  },
-  {
     to: '/settings',
     label: 'Settings',
     icon: Settings,
@@ -73,26 +67,26 @@ export const AppSidebar: React.FC = () => {
   const { isInstallable, isInstalled, promptInstall } = usePwaInstall();
 
   return (
-    <aside className="hidden lg:flex flex-col w-[260px] border-r border-stone-800/60 surface-1 p-4 pt-6 shrink-0 min-h-[calc(100vh-4rem)] select-none">
+    <aside className="hidden lg:flex flex-col w-[240px] border-r border-white/[0.06] bg-[#0c0e14] p-3.5 pt-5 shrink-0 min-h-[calc(100vh-3.5rem)] select-none">
       {/* Brand Identity */}
-      <div className="px-3 mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <Zap className="w-4.5 h-4.5 text-white" />
+      <div className="px-2 mb-6">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 shrink-0">
+            <Zap className="w-3.5 h-3.5 text-emerald-400" />
           </div>
           <div>
-            <h1 className="font-['Outfit'] font-bold text-[15px] text-stone-100 tracking-tight">
+            <h1 className="font-['Plus_Jakarta_Sans',sans-serif] font-bold text-[14px] text-white tracking-tight leading-none">
               START
             </h1>
-            <p className="text-xs text-stone-500 leading-tight">
-              Anti-Procrastination OS
+            <p className="text-[11px] text-slate-500 font-sans mt-0.5">
+              Personal Focus OS
             </p>
           </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="space-y-1 flex-1" aria-label="Main Navigation">
+      <nav className="space-y-0.5 flex-1" aria-label="Main Navigation">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           return (
@@ -101,30 +95,24 @@ export const AppSidebar: React.FC = () => {
               to={item.to}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group relative',
+                  'flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 group relative',
                   isActive
-                    ? 'bg-emerald-500/10 text-emerald-300 shadow-sm'
-                    : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
+                    ? 'bg-white/[0.06] text-white border border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.25)]'
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.03] border border-transparent'
                 )
               }
             >
               {({ isActive }) => (
                 <>
-                  {/* Active indicator bar */}
-                  {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-emerald-500" />
-                  )}
                   <Icon
                     className={cn(
-                      'w-[18px] h-[18px] shrink-0 transition-colors',
-                      isActive ? 'text-emerald-400' : 'text-stone-500 group-hover:text-stone-300'
+                      'w-4 h-4 shrink-0 transition-colors',
+                      isActive ? 'text-emerald-400' : 'text-slate-500 group-hover:text-slate-300'
                     )}
                   />
                   <span className="truncate">{item.label}</span>
-                  {item.badge && (
-                    <span className="ml-auto text-xs font-medium px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300">
-                      {item.badge}
-                    </span>
+                  {isActive && (
+                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   )}
                 </>
               )}
@@ -133,61 +121,67 @@ export const AppSidebar: React.FC = () => {
         })}
       </nav>
 
-      {/* Executive AI Assistance */}
-      <div className="pt-4 pb-2 space-y-1.5 border-t border-stone-800/50">
-        <div className="px-3 pb-1 text-xs font-medium text-stone-500 uppercase tracking-wider">
-          Executive Tools
-        </div>
+      {/* Triage Tools */}
+      <div className="pt-3 pb-2 space-y-1 border-t border-white/[0.06]">
         <button
           type="button"
           onClick={() => window.dispatchEvent(new CustomEvent('open-ai-coach'))}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-stone-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all duration-150 group cursor-pointer text-left"
+          className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium text-slate-400 hover:text-emerald-300 hover:bg-emerald-500/[0.06] border border-transparent hover:border-emerald-500/20 transition-all duration-150 group cursor-pointer text-left"
           title="Open AI Executive Reasoning Assistant"
         >
-          <Sparkles className="w-[18px] h-[18px] shrink-0 text-emerald-400/70 group-hover:text-emerald-400" />
-          <span className="truncate">AI Coach</span>
-          <span className="ml-auto text-xs font-medium px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
-            Assistant
-          </span>
+          <Sparkles className="w-4 h-4 shrink-0 text-emerald-400/80 group-hover:text-emerald-400" />
+          <span className="truncate">AI Task Breakdown</span>
         </button>
 
         <button
           type="button"
           onClick={() => window.dispatchEvent(new CustomEvent('open-overwhelm-rescue'))}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-stone-400 hover:text-amber-300 hover:bg-amber-500/10 transition-all duration-150 group cursor-pointer text-left"
+          className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium text-slate-400 hover:text-amber-300 hover:bg-amber-500/[0.06] border border-transparent hover:border-amber-500/20 transition-all duration-150 group cursor-pointer text-left"
           title="Feeling overwhelmed? Click for rapid 3-step reduction"
         >
-          <LifeBuoy className="w-[18px] h-[18px] shrink-0 text-amber-400/70 group-hover:text-amber-400" />
-          <span className="truncate">Overwhelmed?</span>
-          <span className="ml-auto text-xs font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
-            Rescue
-          </span>
+          <LifeBuoy className="w-4 h-4 shrink-0 text-amber-400/80 group-hover:text-amber-400" />
+          <span className="truncate">Overwhelm Rescue</span>
         </button>
+
+        <NavLink
+          to="/rules"
+          className={({ isActive }) =>
+            cn(
+              'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 group text-left',
+              isActive
+                ? 'bg-white/[0.06] text-white border border-white/[0.08]'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.03] border border-transparent'
+            )
+          }
+          title="Read the 10 Anti-procrastination Rules"
+        >
+          {({ isActive }) => (
+            <>
+              <BookOpen
+                className={cn(
+                  'w-4 h-4 shrink-0 transition-colors',
+                  isActive ? 'text-emerald-400' : 'text-slate-500 group-hover:text-slate-300'
+                )}
+              />
+              <span className="truncate">Rules OS</span>
+              {isActive && (
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              )}
+            </>
+          )}
+        </NavLink>
 
         {isInstallable && !isInstalled && (
           <button
             type="button"
             onClick={promptInstall}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all duration-150 group cursor-pointer text-left"
+            className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium text-slate-400 hover:text-white hover:bg-white/[0.04] border border-transparent transition-all duration-150 group cursor-pointer text-left"
             title="Install START on your device"
           >
-            <Download className="w-[18px] h-[18px] shrink-0 text-emerald-400/80 group-hover:text-emerald-400" />
-            <span className="truncate">Install App</span>
-            <span className="ml-auto text-xs font-medium px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
-              PWA
-            </span>
+            <Download className="w-4 h-4 shrink-0 text-slate-500 group-hover:text-white" />
+            <span className="truncate">Install Web App</span>
           </button>
         )}
-      </div>
-
-      {/* Bottom motivational strip */}
-      <div className="mt-auto pt-4 border-t border-stone-800/50">
-        <div className="p-3.5 rounded-xl bg-gradient-to-br from-emerald-500/5 to-teal-500/5 border border-emerald-500/10">
-          <p className="text-[12px] text-stone-400 leading-relaxed italic">
-            "Motivation follows physical action. Do not wait to feel ready."
-          </p>
-          <p className="text-xs text-stone-600 mt-1.5 font-medium">— Rule 01</p>
-        </div>
       </div>
     </aside>
   );

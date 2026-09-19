@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '../../components/layout/PageContainer.tsx';
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card.tsx';
+import { Card, CardHeader, CardContent } from '../../components/ui/Card.tsx';
 import { EmptyState } from '../../components/ui/EmptyState.tsx';
 import { Button } from '../../components/ui/Button.tsx';
 import { Badge } from '../../components/ui/Badge.tsx';
@@ -19,7 +19,6 @@ import { WorkSlot } from '../../types/models.ts';
 import {
   ListOrdered,
   Plus,
-  ShieldAlert,
   CalendarClock,
   Compass,
   Zap,
@@ -27,7 +26,6 @@ import {
   PhoneOff,
   Play,
   LifeBuoy,
-  Sparkles,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -95,74 +93,97 @@ export const PlannerPage: React.FC = () => {
     emptyHint: string,
     accentClass: string
   ) => (
-    <Card
-      variant="default"
-      className={`transition-all ${slot ? accentClass : 'border-stone-800/30'}`}
+    <div
+      className={`p-4 rounded-xl transition-all duration-150 flex flex-col justify-between ${
+        slot
+          ? `bg-[#12151c] border border-white/[0.07] ${accentClass} shadow-sm`
+          : 'bg-white/[0.015] border border-white/[0.05]'
+      }`}
     >
-      <CardHeader className="pb-2">
+      <div className="space-y-2.5">
         <div className="flex items-center justify-between">
-          <span className={`text-xs font-medium ${rank === 1 ? 'text-emerald-400' : 'text-stone-400'}`}>
-            {label}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                rank === 1 ? 'bg-emerald-400' : rank === 2 ? 'bg-teal-400' : 'bg-slate-500'
+              }`}
+            />
+            <span
+              className={`text-xs font-semibold ${
+                rank === 1 ? 'text-emerald-400' : 'text-slate-400'
+              }`}
+            >
+              {label}
+            </span>
+          </div>
           {slot && (
-            <Badge variant={rank === 1 ? 'action' : 'neutral'}>
+            <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white/[0.04] text-slate-300 border border-white/[0.06]">
               {slot.estimatedDurationMinutes}m
-            </Badge>
+            </span>
           )}
         </div>
-        <CardTitle className="text-sm text-stone-100 truncate">
-          {slot ? slot.taskTitle : emptyHint}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {slot ? (
-          <div className="space-y-3">
-            <div className="text-sm text-stone-300">
-              <span className="text-stone-500">1st action: </span>
-              &ldquo;{slot.firstPhysicalAction}&rdquo;
+
+        <div>
+          <h3 className="font-['Plus_Jakarta_Sans',sans-serif] text-sm font-semibold text-white truncate">
+            {slot ? slot.taskTitle : emptyHint}
+          </h3>
+        </div>
+
+        {slot && (
+          <div className="space-y-2 pt-1 text-xs">
+            <div className="p-2 rounded bg-white/[0.02] border border-white/[0.04] text-slate-300">
+              <span className="text-emerald-400 font-medium">1st action: </span>
+              <span className="text-slate-300">&ldquo;{slot.firstPhysicalAction}&rdquo;</span>
             </div>
-            <div className="text-sm text-stone-400 truncate">
-              Output: {slot.desiredOutput}
+            <div className="text-slate-400 truncate">
+              <span className="text-slate-500">Output: </span>
+              {slot.desiredOutput}
             </div>
-            {slot.status !== 'completed' && (
-              <div className="flex items-center gap-2 pt-1">
-                <Button
-                  variant={rank === 1 ? 'primary' : 'secondary'}
-                  size="sm"
-                  onClick={() => handleStartSlot(slot)}
-                  leftIcon={<Play className="w-3.5 h-3.5" />}
-                >
-                  Start Focus
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setRecoverySlot(slot)}
-                  className="text-amber-400 hover:text-amber-300 p-1.5"
-                  title="10m Recovery"
-                >
-                  <LifeBuoy className="w-3.5 h-3.5" />
-                </Button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-2">
-            <p className="text-sm text-stone-500 italic">{emptyHint}</p>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-sm text-emerald-400 hover:text-emerald-300 w-full justify-start p-0"
-              onClick={() => setIsPlanModalOpen(true)}
-              leftIcon={<Plus className="w-3.5 h-3.5" />}
-            >
-              Plan slot
-            </Button>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+
+      <div className="pt-3 mt-3 border-t border-white/[0.05]">
+        {slot ? (
+          slot.status !== 'completed' && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant={rank === 1 ? 'primary' : 'secondary'}
+                size="sm"
+                onClick={() => handleStartSlot(slot)}
+                leftIcon={<Play className="w-3.5 h-3.5" />}
+                className="flex-1"
+              >
+                Start Focus
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setRecoverySlot(slot)}
+                className="text-amber-400 hover:text-amber-300 p-1.5 shrink-0"
+                title="10m Recovery"
+              >
+                <LifeBuoy className="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          )
+        ) : (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs text-emerald-400 hover:text-emerald-300 w-full justify-center p-1"
+            onClick={() => setIsPlanModalOpen(true)}
+            leftIcon={<Plus className="w-3 h-3" />}
+          >
+            Plan {label}
+          </Button>
+        )}
+      </div>
+    </div>
   );
+
+  const activeSlotsCount = slots.filter((s) => s.status !== 'completed').length;
+  const isAtCapacity = activeSlotsCount >= 5;
 
   return (
     <PageContainer
@@ -170,32 +191,16 @@ export const PlannerPage: React.FC = () => {
       subtitle="Convert priorities into discrete, concrete work slots with defined physical outputs."
       ruleHint="Rule 02: Never schedule a vague task"
       actions={
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            className="border-amber-500/25 text-amber-300 hover:bg-amber-500/10 cursor-pointer"
-            leftIcon={<LifeBuoy className="w-3.5 h-3.5 text-amber-400" />}
-            onClick={() => window.dispatchEvent(new CustomEvent('open-overwhelm-rescue'))}
-          >
-            Overwhelmed?
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="border-emerald-500/25 text-emerald-300 hover:bg-emerald-500/10 cursor-pointer"
-            leftIcon={<Sparkles className="w-3.5 h-3.5 text-emerald-400" />}
-            onClick={() => window.dispatchEvent(new CustomEvent('open-ai-coach'))}
-          >
-            AI Coach
-          </Button>
+        <div className="flex items-center gap-2">
           <Button
             variant="primary"
             size="sm"
             leftIcon={<Compass className="w-4 h-4" />}
             onClick={() => setIsPlanModalOpen(true)}
+            disabled={isAtCapacity}
+            className={isAtCapacity ? 'opacity-60 cursor-not-allowed' : ''}
           >
-            Plan Next Slot
+            {isAtCapacity ? 'Daily Limit (5/5)' : 'Plan Next Slot'}
           </Button>
           <Link to="/today">
             <Button variant="secondary" size="sm">
@@ -206,6 +211,16 @@ export const PlannerPage: React.FC = () => {
       }
     >
       <div className="space-y-6 text-left">
+        {/* Daily Capacity Cap Banner */}
+        {isAtCapacity && (
+          <div className="p-3.5 rounded-xl bg-[#12151c] border border-amber-500/25 flex items-center justify-between text-xs text-slate-300">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-amber-400" />
+              <span>Daily focus bandwidth capped at 5 slots to prevent overplanning paralysis.</span>
+            </div>
+            <span className="font-mono text-amber-400 font-semibold">5 / 5 Slots</span>
+          </div>
+        )}
         {/* Active Focus Session Banner */}
         {activeSession && (
           <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-500/5 to-emerald-500/5 border border-emerald-500/20 flex items-center justify-between gap-4">
@@ -300,18 +315,20 @@ export const PlannerPage: React.FC = () => {
                 {slots.map((slot) => (
                   <div
                     key={slot.id}
-                    className="p-4 rounded-xl surface-2 border border-stone-800/30 hover:border-stone-700/50 transition-all space-y-3"
+                    className="p-4 rounded-xl bg-[#12151c] border border-white/[0.065] hover:border-white/[0.12] transition-all space-y-3 shadow-sm"
                   >
                     {/* Slot header */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800/30 pb-3">
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="text-emerald-400 font-semibold">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.05] pb-3">
+                      <div className="flex items-center gap-2 text-xs font-mono">
+                        <span className="text-emerald-400 font-semibold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
                           {slot.startTime} – {slot.endTime}
                         </span>
-                        <span className="text-stone-700">·</span>
-                        <Badge variant="action">{slot.estimatedDurationMinutes} min</Badge>
+                        <span className="text-slate-600">·</span>
+                        <span className="text-slate-400">{slot.estimatedDurationMinutes}m</span>
                         {slot.isTopPriority && (
-                          <Badge variant="warning">Top {slot.isTopPriority}</Badge>
+                          <span className="text-amber-300 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded text-[11px] font-semibold">
+                            Top {slot.isTopPriority}
+                          </span>
                         )}
                         <Badge
                           variant={
@@ -352,7 +369,7 @@ export const PlannerPage: React.FC = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => setSlotToDelete(slot)}
-                          className="text-stone-500 hover:text-red-400 p-1.5"
+                          className="text-slate-500 hover:text-red-400 p-1.5"
                           aria-label="Delete slot"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -361,34 +378,34 @@ export const PlannerPage: React.FC = () => {
                     </div>
 
                     {/* Slot body */}
-                    <div className="space-y-3">
-                      <h4 className="font-['Outfit'] text-base font-semibold text-stone-100">
+                    <div className="space-y-2.5">
+                      <h4 className="font-['Plus_Jakarta_Sans',sans-serif] text-base font-semibold text-white">
                         {slot.taskTitle}
                       </h4>
 
-                      <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/10 space-y-1.5">
+                      <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05] space-y-1">
                         <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-400">
                           <Zap className="w-3.5 h-3.5" />
                           <span>First physical action</span>
                         </div>
-                        <p className="text-sm text-stone-200">
+                        <p className="text-xs sm:text-sm text-slate-200">
                           &ldquo;{slot.firstPhysicalAction}&rdquo;
                         </p>
                       </div>
 
-                      <div className="text-sm text-stone-300 flex items-start gap-2">
-                        <span className="text-stone-500 shrink-0">Output:</span>
-                        <span>{slot.desiredOutput}</span>
+                      <div className="text-xs sm:text-sm text-slate-400 flex items-start gap-2">
+                        <span className="text-slate-500 shrink-0 font-medium">Deliverable:</span>
+                        <span className="text-slate-300">{slot.desiredOutput}</span>
                       </div>
 
                       {slot.preparedData && (
-                        <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-stone-400">
-                          <span className="flex items-center gap-1 text-amber-300/80">
+                        <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-slate-400">
+                          <span className="flex items-center gap-1 text-amber-300/80 font-mono text-[11px]">
                             <PhoneOff className="w-3 h-3" />
                             Phone: {slot.preparedData.phoneLocation}
                           </span>
                           {slot.preparedData.ifThenPlan && (
-                            <span className="text-stone-500 truncate max-w-xs">
+                            <span className="text-slate-500 truncate max-w-xs text-[11px] font-mono">
                               · Defense: {slot.preparedData.ifThenPlan}
                             </span>
                           )}
@@ -400,28 +417,6 @@ export const PlannerPage: React.FC = () => {
               </div>
             )}
           </CardContent>
-        </Card>
-
-        {/* Vague Task Notice */}
-        <Card variant="subtle" className="p-5 border-amber-500/10 bg-amber-500/3">
-          <div className="flex items-start gap-3">
-            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/15 shrink-0">
-              <ShieldAlert className="w-4 h-4 text-amber-400" />
-            </div>
-            <div className="space-y-1.5 text-left">
-              <h4 className="text-sm font-semibold text-amber-300">
-                Concrete action validator active
-              </h4>
-              <p className="text-sm text-stone-400 leading-relaxed">
-                When scheduling a slot, START enforces 4 mandatory elements:{' '}
-                <strong className="text-stone-200">Task</strong>,{' '}
-                <strong className="text-stone-200">Desired Output</strong>,{' '}
-                <strong className="text-stone-200">First Physical Action</strong>, and{' '}
-                <strong className="text-stone-200">Duration</strong>.
-                Ambiguous intentions like &ldquo;Study&rdquo; or &ldquo;Work on it&rdquo; are rejected.
-              </p>
-            </div>
-          </div>
         </Card>
 
         {/* Plan Slot Modal */}

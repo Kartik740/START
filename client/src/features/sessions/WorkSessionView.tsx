@@ -128,23 +128,27 @@ export const WorkSessionView: React.FC = () => {
   // If no active session is running
   if (!activeSession) {
     return (
-      <div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center justify-center p-6">
-        <div className="max-w-md w-full p-8 rounded-2xl bg-stone-900 border border-stone-800/40 text-center space-y-4 shadow-2xl">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-teal-500/10 text-teal-400 flex items-center justify-center border border-teal-500/20">
-            <Target className="w-7 h-7" />
+      <div className="min-h-screen bg-[#0a0c10] text-slate-100 flex flex-col items-center justify-center p-6 selection:bg-emerald-500/20">
+        <div className="max-w-md w-full p-8 rounded-2xl bg-[#12151c] border border-white/[0.07] text-center space-y-5 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.6)]">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-white/[0.04] text-emerald-400 flex items-center justify-center border border-white/[0.08] shadow-inner">
+            <Target className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-bold font-mono">No Active Focus Session</h2>
-          <p className="text-sm text-stone-400 leading-relaxed">
-            There is currently no running work slot. Choose a scheduled slot or plan your next point of entry to begin.
-          </p>
-          <div className="pt-2 flex flex-col gap-2">
+          <div className="space-y-1.5">
+            <h2 className="text-xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-white tracking-tight">
+              Focus Cockpit Standby
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xs mx-auto">
+              No active focus timer engaged. Select your scheduled anchor slot or launch an immediate micro-start.
+            </p>
+          </div>
+          <div className="pt-2 flex flex-col gap-2.5">
             <Button
               variant="primary"
               size="lg"
               onClick={() => navigate('/today')}
-              className="bg-teal-600 hover:bg-teal-500 w-full font-bold"
+              className="w-full"
             >
-              Go to Today Dashboard
+              Today Dashboard
             </Button>
             <Button
               variant="secondary"
@@ -175,7 +179,6 @@ export const WorkSessionView: React.FC = () => {
   const handleEarlyExit = async () => {
     if (!activeSession) return;
 
-    // Log partial session with early termination
     const actualMinutes = Math.max(1, Math.round(elapsedSeconds / 60));
     const sessionLog: WorkSession = {
       id: crypto.randomUUID(),
@@ -221,25 +224,51 @@ export const WorkSessionView: React.FC = () => {
     });
   };
 
+  // Global keyboard shortcuts for focus workspace: Space to Pause/Resume, U to capture distraction, Enter to finish
+  useEffect(() => {
+    if (!activeSession) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input/textarea or if a modal is open
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+      if (isDistractionModalOpen || isCloseModalOpen || isRecoveryModalOpen) return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        handleTogglePause();
+      } else if (e.key === 'u' || e.key === 'U') {
+        e.preventDefault();
+        setIsDistractionModalOpen(true);
+      } else if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setIsCloseModalOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeSession, isDistractionModalOpen, isCloseModalOpen, isRecoveryModalOpen]);
+
   return (
-    <div className="min-h-screen bg-[#06080F] text-stone-100 flex flex-col justify-between selection:bg-teal-500/30 font-sans">
+    <div className="min-h-screen bg-[#0a0c10] text-slate-100 flex flex-col justify-between selection:bg-emerald-500/20 font-sans">
       {/* Top Bar: Minimal Focus Header */}
-      <header className="px-6 py-4 flex items-center justify-between border-b border-stone-900/80 bg-stone-950/40 backdrop-blur-md">
+      <header className="px-6 py-4 flex items-center justify-between border-b border-white/[0.06] bg-[#08090c]/80 backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-          <span className="text-xs font-mono tracking-widest uppercase font-bold text-stone-300">
+          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-xs font-mono tracking-wider uppercase font-semibold text-slate-300">
             {activeSession.wasRecoverySession ? (
               <span className="text-amber-400 flex items-center gap-1.5">
                 <LifeBuoy className="w-3.5 h-3.5" />
                 10-Minute Rescue Session Active
               </span>
             ) : (
-              'Focus Workspace Active'
+              'Deep Focus Workspace'
             )}
           </span>
           {activeSession.isPaused && (
-            <span className="px-2 py-0.5 rounded text-xs font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase font-bold">
-              Timer Paused
+            <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-amber-500/10 text-amber-300 border border-amber-500/25 uppercase font-medium">
+              Paused
             </span>
           )}
         </div>
@@ -247,17 +276,17 @@ export const WorkSessionView: React.FC = () => {
         {/* Exit Button with Confirm */}
         <div className="relative">
           {showExitConfirm ? (
-            <div className="flex items-center gap-2 bg-stone-900 border border-stone-800/40 p-1.5 rounded-lg shadow-xl animate-in fade-in">
-              <span className="text-xs text-stone-300 font-mono pl-1">Abandon session?</span>
+            <div className="flex items-center gap-2 bg-[#12151c] border border-white/[0.08] p-1.5 rounded-lg shadow-xl animate-scale-in">
+              <span className="text-xs text-slate-300 font-mono pl-1">End early?</span>
               <button
                 onClick={handleEarlyExit}
-                className="text-xs font-mono uppercase bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 px-2 py-1 rounded border border-rose-500/40 cursor-pointer font-bold"
+                className="text-xs font-mono bg-red-500/15 hover:bg-red-500/25 text-red-300 px-2 py-1 rounded border border-red-500/30 cursor-pointer font-medium"
               >
                 Yes, Exit
               </button>
               <button
                 onClick={() => setShowExitConfirm(false)}
-                className="text-xs font-mono text-stone-400 hover:text-stone-200 px-1.5 py-1 cursor-pointer"
+                className="text-xs font-mono text-slate-400 hover:text-slate-200 px-1.5 py-1 cursor-pointer"
               >
                 Stay
               </button>
@@ -265,10 +294,10 @@ export const WorkSessionView: React.FC = () => {
           ) : (
             <button
               onClick={() => setShowExitConfirm(true)}
-              className="text-xs font-mono text-stone-500 hover:text-stone-300 flex items-center gap-1.5 transition-colors cursor-pointer py-1 px-2.5 rounded hover:bg-stone-900"
+              className="text-xs font-mono text-slate-500 hover:text-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer py-1 px-2.5 rounded hover:bg-white/[0.04]"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span>Leave Session</span>
+              <span>Leave</span>
             </button>
           )}
         </div>
@@ -277,12 +306,12 @@ export const WorkSessionView: React.FC = () => {
       {/* Main Focus Core */}
       <main className="flex-1 flex flex-col items-center justify-center max-w-2xl w-full mx-auto px-4 py-8 text-center space-y-8">
         {/* Task Title */}
-        <div className="space-y-2">
-          <span className="text-xs font-medium text-teal-400 font-semibold flex items-center justify-center gap-1.5">
-            <Target className="w-4 h-4" />
-            Current Focus Target
-          </span>
-          <h1 className="text-2xl sm:text-4xl font-extrabold text-stone-100 tracking-tight leading-snug">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-emerald-400/90 uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span>Active Focus Deliverable</span>
+          </div>
+          <h1 className="text-2xl sm:text-4xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-white tracking-tight leading-snug">
             {activeSession.slot.taskTitle}
           </h1>
         </div>
@@ -290,31 +319,31 @@ export const WorkSessionView: React.FC = () => {
         {/* Big Monospace Countdown Display */}
         <div className="space-y-3">
           <div
-            className={`font-mono text-6xl sm:text-8xl font-black tracking-tight select-none transition-colors ${
+            className={`font-mono text-6xl sm:text-8xl font-bold tracking-tight select-none transition-all ${
               activeSession.isPaused
-                ? 'text-stone-600'
+                ? 'text-slate-600'
                 : remainingSeconds === 0
-                ? 'text-emerald-400 animate-pulse'
-                : 'text-stone-100'
+                ? 'text-emerald-400 animate-pulse drop-shadow-[0_0_24px_rgba(16,185,129,0.5)]'
+                : 'text-white drop-shadow-[0_0_24px_rgba(16,185,129,0.15)]'
             }`}
           >
             {formatTime(remainingSeconds > 0 ? remainingSeconds : elapsedSeconds)}
           </div>
 
-          <div className="flex items-center justify-center gap-3 text-xs font-mono text-stone-400">
+          <div className="flex items-center justify-center gap-3 text-xs font-mono text-slate-400">
             <span>
               {remainingSeconds > 0 ? 'REMAINING' : 'OVERTIME FLOW'} · TARGET:{' '}
               {activeSession.targetDurationMinutes}m
             </span>
-            <span>·</span>
-            <span className="text-stone-500">ELAPSED: {formatTime(elapsedSeconds)}</span>
+            <span className="text-slate-600">·</span>
+            <span className="text-slate-500">ELAPSED: {formatTime(elapsedSeconds)}</span>
           </div>
 
           {/* Progress Bar */}
-          <div className="w-64 sm:w-80 h-1.5 bg-stone-900 rounded-full mx-auto overflow-hidden border border-stone-800">
+          <div className="w-64 sm:w-80 h-1 bg-white/[0.08] rounded-full mx-auto overflow-hidden">
             <div
               className={`h-full transition-all duration-1000 ${
-                activeSession.wasRecoverySession ? 'bg-amber-500' : 'bg-teal-500'
+                activeSession.wasRecoverySession ? 'bg-amber-400' : 'bg-emerald-400'
               }`}
               style={{ width: `${progressPercent}%` }}
             />
@@ -324,12 +353,12 @@ export const WorkSessionView: React.FC = () => {
         {/* Concrete Deliverable & First Physical Action Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left">
           {/* Concrete Output */}
-          <div className="p-4 rounded-xl bg-stone-900/60 border border-stone-800/40 backdrop-blur space-y-1.5">
-            <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-400 uppercase font-bold">
-              <Sparkles className="w-3.5 h-3.5" />
+          <div className="p-4 rounded-xl bg-[#12151c] border border-white/[0.065] space-y-1.5">
+            <div className="flex items-center gap-1.5 text-xs font-mono text-slate-400 font-medium uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
               <span>Target Output</span>
             </div>
-            <p className="text-sm font-medium text-stone-200 leading-snug">
+            <p className="text-xs sm:text-sm text-slate-200 leading-snug font-medium">
               {activeSession.slot.desiredOutput || 'Specific tangible output to be created.'}
             </p>
           </div>
@@ -337,30 +366,30 @@ export const WorkSessionView: React.FC = () => {
           {/* First Physical Action */}
           <div
             onClick={() => setIsFirstActionDone(!isFirstActionDone)}
-            className={`p-4 rounded-xl border backdrop-blur space-y-1.5 cursor-pointer transition-all ${
+            className={`p-4 rounded-xl border space-y-1.5 cursor-pointer transition-all ${
               isFirstActionDone
-                ? 'bg-emerald-950/20 border-emerald-500/40 text-emerald-300'
-                : 'bg-stone-900/60 border-stone-800/40 hover:border-stone-700'
+                ? 'bg-emerald-500/[0.06] border-emerald-500/30 text-emerald-300'
+                : 'bg-[#12151c] border-white/[0.065] hover:border-white/[0.12]'
             }`}
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-mono text-amber-400 uppercase font-bold">
+              <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-400 font-medium uppercase tracking-wider">
                 <Zap className="w-3.5 h-3.5" />
-                <span>First Physical Action</span>
+                <span>First Physical Step</span>
               </div>
               <div
-                className={`w-4 h-4 rounded flex items-center justify-center border text-xs ${
+                className={`w-4 h-4 rounded flex items-center justify-center border text-xs transition-colors ${
                   isFirstActionDone
-                    ? 'bg-emerald-500 border-emerald-400 text-stone-950'
-                    : 'border-stone-700 text-transparent'
+                    ? 'bg-emerald-500 border-emerald-400 text-slate-950 font-bold'
+                    : 'border-white/[0.2] text-transparent'
                 }`}
               >
                 ✓
               </div>
             </div>
             <p
-              className={`text-sm font-medium leading-snug ${
-                isFirstActionDone ? 'line-through text-stone-400' : 'text-stone-200'
+              className={`text-xs sm:text-sm font-medium leading-snug ${
+                isFirstActionDone ? 'line-through text-slate-500' : 'text-slate-200'
               }`}
             >
               {activeSession.slot.firstPhysicalAction || 'Take the smallest 15-second physical action.'}
@@ -372,13 +401,13 @@ export const WorkSessionView: React.FC = () => {
         {activeSession.slot.preparedData && (
           <div className="w-full flex flex-wrap items-center justify-center gap-2 text-xs font-mono">
             {activeSession.slot.preparedData.ifThenPlan && (
-              <div className="px-3 py-1.5 rounded-lg bg-teal-950/40 border border-teal-500/30 text-teal-300 flex items-center gap-1.5">
-                <ShieldAlert className="w-3.5 h-3.5 text-teal-400" />
-                <span>PLAN: {activeSession.slot.preparedData.ifThenPlan}</span>
+              <div className="px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/[0.06] text-slate-300 flex items-center gap-1.5">
+                <ShieldAlert className="w-3.5 h-3.5 text-emerald-400" />
+                <span>DEFENSE: {activeSession.slot.preparedData.ifThenPlan}</span>
               </div>
             )}
             {activeSession.slot.preparedData.phoneLocation && (
-              <div className="px-3 py-1.5 rounded-xl surface-1 border border-stone-800/40 text-stone-400 flex items-center gap-1.5">
+              <div className="px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/[0.06] text-slate-400 flex items-center gap-1.5">
                 <Smartphone className="w-3.5 h-3.5 text-amber-400" />
                 <span>PHONE: {activeSession.slot.preparedData.phoneLocation}</span>
               </div>
@@ -388,15 +417,15 @@ export const WorkSessionView: React.FC = () => {
 
         {/* Resisted Distractions Pill Ticker */}
         {activeSession.distractions.length > 0 && (
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs font-mono">
             <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-            <span>{activeSession.distractions.length} distraction impulse(s) captured & resisted</span>
+            <span>{activeSession.distractions.length} urge(s) captured & resisted</span>
           </div>
         )}
       </main>
 
       {/* Primary Action Controls Bar */}
-      <footer className="p-6 border-t border-stone-900/80 bg-stone-950/60 backdrop-blur-lg">
+      <footer className="p-4 sm:p-5 border-t border-white/[0.06] bg-[#08090c]/80 backdrop-blur-xl">
         <div className="max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Pause / Resume Control */}
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -408,13 +437,15 @@ export const WorkSessionView: React.FC = () => {
             >
               {activeSession.isPaused ? (
                 <>
-                  <Play className="w-4 h-4 text-emerald-400" />
-                  <span>Resume Timer</span>
+                  <Play className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Resume</span>
+                  <span className="kbd-chip text-[10px] ml-1">Space</span>
                 </>
               ) : (
                 <>
-                  <Pause className="w-4 h-4 text-amber-400" />
-                  <span>Pause Timer</span>
+                  <Pause className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Pause</span>
+                  <span className="kbd-chip text-[10px] ml-1">Space</span>
                 </>
               )}
             </Button>
@@ -425,7 +456,7 @@ export const WorkSessionView: React.FC = () => {
                 variant="ghost"
                 size="md"
                 onClick={() => setIsRecoveryModalOpen(true)}
-                className="text-stone-400 hover:text-amber-300 text-xs font-mono flex items-center gap-1.5"
+                className="text-slate-400 hover:text-amber-300 text-xs font-mono flex items-center gap-1.5"
                 title="Downshift to a 10-minute micro-start if feeling friction"
               >
                 <LifeBuoy className="w-3.5 h-3.5 text-amber-400" />
@@ -435,25 +466,27 @@ export const WorkSessionView: React.FC = () => {
           </div>
 
           {/* Central Distraction Capture & Finish Button */}
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
             <Button
               variant="secondary"
-              size="lg"
+              size="md"
               onClick={() => setIsDistractionModalOpen(true)}
-              className="flex-1 sm:flex-none border-amber-500/40 text-amber-300 hover:bg-amber-500/10 hover:border-amber-500/60 font-mono text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-amber-950/20"
+              className="flex-1 sm:flex-none border-amber-500/30 text-amber-300 hover:bg-amber-500/10 font-mono text-xs flex items-center justify-center gap-2 cursor-pointer"
             >
-              <ShieldAlert className="w-4 h-4 text-amber-400" />
-              <span>I'm Distracted</span>
+              <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+              <span>Capture Urge</span>
+              <span className="kbd-chip text-[10px] ml-1 text-amber-300 border-amber-500/30 bg-amber-500/10">U</span>
             </Button>
 
             <Button
               variant="primary"
-              size="lg"
+              size="md"
               onClick={() => setIsCloseModalOpen(true)}
-              className="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-bold px-6 text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-950/30"
+              className="flex-1 sm:flex-none px-6 text-xs flex items-center justify-center gap-2 cursor-pointer"
             >
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Finish Session</span>
+              <span className="kbd-chip text-[10px] ml-1 text-slate-950 bg-emerald-400/80 border-emerald-400/40">⌘↵</span>
             </Button>
           </div>
         </div>

@@ -40,8 +40,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-['Outfit'] text-base font-semibold text-stone-100">{title}</h3>
-            <p className="text-sm text-stone-400 mt-1.5 leading-relaxed">{description}</p>
+            <h3 className="font-['Plus_Jakarta_Sans',sans-serif] text-base font-semibold text-white">{title}</h3>
+            <p className="text-sm text-slate-400 mt-1.5 leading-relaxed">{description}</p>
           </div>
         </div>
 

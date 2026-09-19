@@ -39,8 +39,8 @@ export class ErrorBoundary extends Component<Props, State> {
               <AlertOctagon className="w-7 h-7" />
             </div>
             <div>
-              <h2 className="font-['Outfit'] text-xl font-semibold text-stone-100">Something interrupted the loop</h2>
-              <p className="text-sm text-stone-400 mt-2">
+              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-xl font-semibold text-white">Something interrupted the loop</h2>
+              <p className="text-sm text-slate-400 mt-2">
                 An unexpected interface error occurred. Your work state remains saved.
               </p>
             </div>
